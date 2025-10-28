@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Atividade: Upload Múltiplo — Personalizado</title>
+    <style>
+      body {
+        background: linear-gradient(120deg, #fdf2f8 0%, #eef2ff 100%);
+        font-family: "Segoe UI", Arial, sans-serif;
+        min-height: 100vh;
+        color: #0f172a;
+      }
+      .container {
+        max-width: 560px;
+        margin: 42px auto;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%);
+        border-radius: 16px;
+        box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+        padding: 36px 34px 28px 34px;
+        position: relative;
+        overflow: hidden;
+        border-left: 6px solid #8b5cf6;
+      }
+      h2 {
+        margin-top: 0;
+        font-size: 2.05rem;
+        color: #4f46e5;
+        letter-spacing: 0.6px;
+      }
+      .label {
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: block;
+        color: #374151;
+        font-size: 1.05rem;
+      }
+      .file-box {
+        border: 2px dashed #c7b6ff;
+        border-radius: 12px;
+        padding: 22px 16px;
+        background: #fbfdff;
+        display: flex;
+        align-items: center;
+        margin-bottom: 18px;
+        transition: border-color 0.2s, background 0.2s;
+      }
+      .file-box.dragover {
+        border-color: #22d3ee;
+        background: #e0f2fe;
+      }
+      input[type="file"] {
+        margin-right: 16px;
+        font-size: 1.05rem;
+      }
+      .btn {
+        background: linear-gradient(90deg, #7c3aed 40%, #06b6d4 100%);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 34px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 6px 18px rgba(99, 102, 241, 0.12);
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      .btn:hover {
+        transform: translateY(-3px);
+      }
+      .msg {
+        margin-top: 24px;
+        padding: 14px 20px;
+        border-radius: 8px;
+        font-size: 1.13rem;
+        display: none;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+      }
+      .msg.sucesso {
+        background: #e0f7ec;
+        color: #047857;
+        border: 1.5px solid #34d399;
+        display: block;
+        box-shadow: 0 2px 8px #34d39922;
+      }
+      .msg.erro {
+        background: #fef2f2;
+        color: #b91c1c;
+        border: 1.5px solid #f87171;
+        display: block;
+        box-shadow: 0 2px 8px #f8717122;
+      }
+      .preview {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 18px;
+        margin-top: 8px;
+      }
+      .preview img {
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid #c7b6ff;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+        background: #fff;
+      }
+      .file-count {
+        font-size: 1rem;
+        color: #6b21a8;
+        margin-bottom: 8px;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+      }
+      footer.small-credit {
+        margin-top: 18px;
+        font-size: 0.88rem;
+        color: #475569;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Atividade: Upload Múltiplo — Versão personalizada</h2>
+      <p>
+        Envie múltiplas imagens para <code>http://localhost:3000/upload</code>.
+        Esta versão traz um layout atualizado e controles de visualização.
+      </p>
+      <form id="formUpload" onsubmit="enviarArquivos(event)">
+        <label class="label" for="arquivoInput"
+          >Selecione imagens PNG ou JPEG para upload:</label
+        >
+        <div class="file-count" id="fileCount">Nenhum arquivo selecionado</div>
+        <div class="file-box" id="dropzone">
+          <input
+            type="file"
+            id="arquivoInput"
+            name="meusArquivos"
+            multiple
+            accept="image/png, image/jpeg"
+            onchange="atualizarPreview()"
+          />
+        </div>
+        <div class="preview" id="preview"></div>
+        <input type="hidden" id="arquivosSelecionados" />
+        <button class="btn" type="submit">Enviar Arquivos</button>
+      </form>
+      <div id="msg" class="msg"></div>
+      <footer class="small-credit">
+        Personalizado por você — estilizado para se destacar
+      </footer>
+    </div>
+    <script>
+      function mostrarMensagem(texto, tipo) {
+        const msg = document.getElementById("msg");
+        msg.textContent = texto;
+        msg.className = "msg " + tipo;
+        msg.style.display = "block";
+      }
+      function limparMensagem() {
+        const msg = document.getElementById("msg");
+        msg.textContent = "";
+        msg.className = "msg";
+        msg.style.display = "none";
+      }
+      let arquivosSelecionados = [];
+      function atualizarPreview() {
+        const input = document.getElementById("arquivoInput");
+        const preview = document.getElementById("preview");
+        const fileCount = document.getElementById("fileCount");
+        arquivosSelecionados = Array.from(input.files);
+        preview.innerHTML = "";
+        if (!arquivosSelecionados.length) {
+          fileCount.textContent = "Nenhum arquivo selecionado";
+          return;
+        }
+        fileCount.textContent = `${arquivosSelecionados.length} arquivo(s) selecionado(s)`;
+        arquivosSelecionados.forEach((arquivo, idx) => {
+          if (["image/png", "image/jpeg"].includes(arquivo.type)) {
+            const wrapper = document.createElement("div");
+            wrapper.style.position = "relative";
+            wrapper.style.display = "inline-block";
+            const img = document.createElement("img");
+            img.src = URL.createObjectURL(arquivo);
+            img.onload = () => URL.revokeObjectURL(img.src);
+            const btn = document.createElement("button");
+            btn.textContent = "×";
+            btn.title = "Remover";
+            btn.style.position = "absolute";
+            btn.style.top = "-8px";
+            btn.style.right = "-8px";
+            btn.style.background = "#f87171";
+            btn.style.color = "#fff";
+            btn.style.border = "none";
+            btn.style.borderRadius = "50%";
+            btn.style.width = "22px";
+            btn.style.height = "22px";
+            btn.style.cursor = "pointer";
+            btn.style.fontWeight = "bold";
+            btn.style.boxShadow = "0 1px 4px #0002";
+            btn.onclick = (e) => {
+              e.preventDefault();
+              removerArquivo(idx);
+            };
+            wrapper.appendChild(img);
+            wrapper.appendChild(btn);
+            preview.appendChild(wrapper);
+          }
+        });
+      }
+
+      function removerArquivo(idx) {
+        arquivosSelecionados.splice(idx, 1);
+        atualizarInputFiles();
+        atualizarPreview();
+      }
+
+      function atualizarInputFiles() {
+        const input = document.getElementById("arquivoInput");
+        const dt = new DataTransfer();
+        arquivosSelecionados.forEach((f) => dt.items.add(f));
+        input.files = dt.files;
+      }
+      const dropzone = document.getElementById("dropzone");
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("dragover");
+      });
+      dropzone.addEventListener("dragleave", () => {
+        dropzone.classList.remove("dragover");
+      });
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("dragover");
+        const input = document.getElementById("arquivoInput");
+        const novos = Array.from(e.dataTransfer.files);
+        arquivosSelecionados = arquivosSelecionados.concat(novos);
+        arquivosSelecionados = arquivosSelecionados.filter(
+          (file, idx, arr) =>
+            arr.findIndex(
+              (f) =>
+                f.name === file.name &&
+                f.size === file.size &&
+                f.type === file.type
+            ) === idx
+        );
+        atualizarInputFiles();
+        atualizarPreview();
+      });
+      function enviarArquivos(event) {
+        event.preventDefault();
+        limparMensagem();
+        if (!arquivosSelecionados.length) {
+          mostrarMensagem("Selecione pelo menos um arquivo.", "erro");
+          return;
+        }
+        if (arquivosSelecionados.length > 10) {
+          mostrarMensagem("Máximo de 10 arquivos permitidos.", "erro");
+          return;
+        }
+        for (const arquivo of arquivosSelecionados) {
+          if (!["image/png", "image/jpeg"].includes(arquivo.type)) {
+            mostrarMensagem(
+              "Tipo de arquivo inválido. Apenas PNG e JPEG.",
+              "erro"
+            );
+            return;
+          }
+          if (arquivo.size > 5 * 1024 * 1024) {
+            mostrarMensagem(
+              "Arquivo muito grande. Tamanho máximo: 5MB.",
+              "erro"
+            );
+            return;
+          }
+        }
+        const formData = new FormData();
+        for (const arquivo of arquivosSelecionados) {
+          formData.append("meusArquivos", arquivo);
+        }
+        fetch("http://localhost:3000/upload", {
+          method: "POST",
+          body: formData,
+        })
+          .then(async (res) => {
+            const data = await res.json();
+            if (res.ok) {
+              mostrarMensagem(data.message, "sucesso");
+            } else {
+              mostrarMensagem(data.error || "Erro no upload.", "erro");
+            }
+          })
+          .catch(() => {
+            mostrarMensagem("Erro ao conectar ao servidor.", "erro");
+          });
+      }
+    </script>
+  </body>
+</html>

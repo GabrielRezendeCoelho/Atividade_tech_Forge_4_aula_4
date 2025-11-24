@@ -6,7 +6,6 @@ const userModel = require('../../models/userModel');
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'uma_chave_secreta_local';
 
-// POST /auth/register
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body || {};
@@ -25,7 +24,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /auth/login
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body || {};

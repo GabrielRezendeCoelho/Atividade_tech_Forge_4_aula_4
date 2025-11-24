@@ -24,8 +24,6 @@ function addUser(user) {
     id,
     username: user.username,
     passwordHash: user.passwordHash,
-    // role padrão 'user' se não for informado
-    role: user.role || 'user',
   };
   if (user.email) stored.email = user.email;
   users.push(stored);

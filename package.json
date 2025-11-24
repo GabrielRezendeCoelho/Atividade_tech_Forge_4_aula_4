@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node upload-multiplos-arquivos/server.js",
-    "dev": "nodemon upload-multiplos-arquivos/server.js"
+    "dev": "nodemon upload-multiplos-arquivos/server.js",
+    "test:rbac": "node scripts/test_rbac.js"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

@@ -126,7 +126,7 @@
     <div class="container">
       <h2>Atividade: Upload Múltiplo — Versão personalizada</h2>
       <p>
-        Envie múltiplas imagens para <code>http://localhost:3000/upload</code>.
+        Envie múltiplas imagens para <code>http://localhost:3000/file/upload</code>.
         Esta versão traz um layout atualizado e controles de visualização.
       </p>
       <form id="formUpload" onsubmit="enviarArquivos(event)">
@@ -281,7 +281,7 @@
         for (const arquivo of arquivosSelecionados) {
           formData.append("meusArquivos", arquivo);
         }
-        fetch("http://localhost:3000/upload", {
+        fetch("http://localhost:3000/file/upload", {
           method: "POST",
           body: formData,
         })
